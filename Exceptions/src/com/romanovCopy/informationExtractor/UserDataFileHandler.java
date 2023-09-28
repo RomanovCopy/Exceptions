@@ -16,7 +16,8 @@ public class UserDataFileHandler {
      * @param userData данные
      * @throws IOException проброс ошибки
      */
-    public void writeUserDataToFile(String fileName, String userData) throws IOException {
+    public void writeUserDataToFile(String fullName, String userData) throws IOException {
+        String fileName=fullName.split(" ")[0].trim();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             writer.write(userData);
             writer.newLine();

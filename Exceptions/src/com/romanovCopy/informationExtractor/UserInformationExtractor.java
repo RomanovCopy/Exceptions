@@ -1,5 +1,8 @@
 package informationExtractor;
 
+import myExceptions.InsufficientDataException;
+import myExceptions.InvalidDataFormatException;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,8 +12,8 @@ public class UserInformationExtractor {
 
     private final Pattern FULL_NAME_PATTERN = Pattern.compile("[А-ЯЁа-яё]+ [А-ЯЁа-яё]+ [А-ЯЁа-яё]+");
     private final Pattern DATE_OF_BIRTH_PATTERN = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
-    private final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("\\+\\d{10}");
-    private final Pattern GENDER_PATTERN = Pattern.compile("[fm]");
+    private final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("\\d{11}");
+    private final Pattern GENDER_PATTERN = Pattern.compile("\\b[fm]\\b");
 
     public UserInformationExtractor() {
 
@@ -23,14 +26,14 @@ public class UserInformationExtractor {
      * @param text  введенный текст
      * @return найденные Фамилия Имя и Отчество
      */
-    private String extractFullName(String text) {
+    public String extractFullName(String text)
+            throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = FULL_NAME_PATTERN.matcher(text);
 
-        if (matcher.find()) {
+        if (validate(matcher)) {
             return matcher.group();
         }
-
         return null;
     }
 
@@ -39,11 +42,12 @@ public class UserInformationExtractor {
      * @param text введенный текст
      * @return дата рождения
      */
-    private String extractDateOfBirth(String text) {
+    public String extractDateOfBirth(String text)
+            throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = DATE_OF_BIRTH_PATTERN.matcher(text);
 
-        if (matcher.find()) {
+        if (validate(matcher)) {
             return matcher.group();
         }
 
@@ -55,11 +59,12 @@ public class UserInformationExtractor {
      * @param text введенный текст
      * @return номер телефона
      */
-    private String extractPhoneNumber(String text) {
+    public String extractPhoneNumber(String text)
+            throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = PHONE_NUMBER_PATTERN.matcher(text);
 
-        if (matcher.find()) {
+        if (validate(matcher)) {
             return matcher.group();
         }
 
@@ -71,14 +76,41 @@ public class UserInformationExtractor {
      * @param text введенный текст
      * @return пол: f - female; m - man.
      */
-    private String extractGender(String text) {
+    public String extractGender(String text)
+            throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = GENDER_PATTERN.matcher(text);
 
-        if (matcher.find()) {
+        if (validate(matcher)) {
             return matcher.group();
         }
 
         return null;
+    }
+
+    private boolean validate(Matcher matcher)
+            throws InsufficientDataException, InvalidDataFormatException {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        String methodName = "not known";
+        String answer="";
+        if (stackTrace.length >= 3) {
+            StackTraceElement caller = stackTrace[2];
+            methodName = caller.getMethodName();
+        }
+        if(matcher.find()){
+
+        }else {
+            if(methodName.equals("extractGender")){
+                
+            }else if(methodName.equals("extractPhoneNumber")){
+                
+            } else if (methodName.equals("extractDateOfBirth")) {
+                
+            } else if (methodName.equals("extractFullName")) {
+                
+            }
+            throw new InsufficientDataException("");
+        }
+        return true;
     }
 }
