@@ -1,4 +1,4 @@
-package informationExtractor;
+package src.com.romanovCopy.informationExtractor;
 
 import java.io.*;
 
@@ -12,7 +12,7 @@ public class UserDataFileHandler {
 
     /**
      * запись данных в файл
-     * @param fileName путь к файлу
+     * @param fullName путь к файлу
      * @param userData данные
      * @throws IOException проброс ошибки
      */

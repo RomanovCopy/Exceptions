@@ -1,4 +1,4 @@
-package myExceptions;
+package src.com.romanovCopy.myExceptions;
 
 public class InsufficientDataException extends RuntimeException{
     public InsufficientDataException() {

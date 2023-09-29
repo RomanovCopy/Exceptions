@@ -1,4 +1,6 @@
-import informationExtractor.UserDataExtraction;
+package src.com.romanovCopy;
+
+import src.com.romanovCopy.informationExtractor.UserDataExtraction;
 
 import java.util.Scanner;
 

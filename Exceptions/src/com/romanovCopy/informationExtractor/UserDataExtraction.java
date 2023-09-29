@@ -1,9 +1,7 @@
-package informationExtractor;
+package src.com.romanovCopy.informationExtractor;
 
-import myExceptions.InsufficientDataException;
-import myExceptions.InvalidDataFormatException;
+import src.com.romanovCopy.myExceptions.*;
 
-import java.io.IOException;
 
 public class UserDataExtraction {
 
@@ -35,8 +33,6 @@ public class UserDataExtraction {
         }  catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        createUserDataFile("Романов Сергей Михайлович", "11.12.1971", "79252980064", "m");
     }
 
     private String createUserDataFile(String fullName, String dateOfBirth,

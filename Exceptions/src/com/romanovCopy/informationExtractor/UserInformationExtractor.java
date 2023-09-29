@@ -1,8 +1,10 @@
-package informationExtractor;
+package src.com.romanovCopy.informationExtractor;
 
-import myExceptions.InsufficientDataException;
-import myExceptions.InvalidDataFormatException;
+import src.com.romanovCopy.myExceptions.InsufficientDataException;
+import src.com.romanovCopy.myExceptions.InvalidDataFormatException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,27 +92,37 @@ public class UserInformationExtractor {
 
     private boolean validate(Matcher matcher)
             throws InsufficientDataException, InvalidDataFormatException {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        String methodName = "not known";
-        String answer="";
-        if (stackTrace.length >= 3) {
-            StackTraceElement caller = stackTrace[2];
-            methodName = caller.getMethodName();
+        List<Integer> matchPositions=new ArrayList<>();
+        while (matcher.find()){
+            matchPositions.add(matcher.start());
         }
-        if(matcher.find()){
-
-        }else {
-            if(methodName.equals("extractGender")){
-                
-            }else if(methodName.equals("extractPhoneNumber")){
-                
-            } else if (methodName.equals("extractDateOfBirth")) {
-                
-            } else if (methodName.equals("extractFullName")) {
-                
+        int size= matchPositions.size();
+        if(size!=1){
+            if(size==0){
+                throw new InvalidDataFormatException(generatingATextMessage(matcher,matchPositions));
+            }else {
+                throw new InsufficientDataException(generatingATextMessage(matcher,matchPositions));
             }
-            throw new InsufficientDataException("");
         }
         return true;
+    }
+
+    private String generatingATextMessage(Matcher matcher, List<Integer> matchPositions){
+        StringBuilder message=new StringBuilder("Данные о ");
+        String text=matchPositions.size()==0?"не найдены или указаны не верно ":
+                "найдены в нескольких позициях представленного текста: ";
+        if(matcher.pattern().equals(FULL_NAME_PATTERN)){
+            message.append("Фамилии Имени и Отчеству ").append(text);
+        }else if(matcher.pattern().equals(DATE_OF_BIRTH_PATTERN)){
+            message.append("дате рождения ").append(text);
+        } else if (matcher.pattern().equals(PHONE_NUMBER_PATTERN)) {
+            message.append("номере телефона ").append(text);
+        } else if (matcher.pattern().equals(GENDER_PATTERN)) {
+            message.append("поле ").append(text);
+        }
+        for(int pos:matchPositions){
+            message.append(pos + " ");
+        }
+        return message.toString();
     }
 }
