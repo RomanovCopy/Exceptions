@@ -4,21 +4,33 @@ import src.com.romanovCopy.myExceptions.InsufficientDataException;
 import src.com.romanovCopy.myExceptions.InvalidDataFormatException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
+/**
+ * класс выполняющий парсинг данных из текста, а так же их валидацию и
+ * контроль полноты данных
+ */
 public class UserInformationExtractor {
 
+    /**
+     * регулярные выражения
+     */
     private final Pattern FULL_NAME_PATTERN = Pattern.compile("[А-ЯЁа-яё]+ [А-ЯЁа-яё]+ [А-ЯЁа-яё]+");
     private final Pattern DATE_OF_BIRTH_PATTERN = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
     private final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("\\d{11}");
     private final Pattern GENDER_PATTERN = Pattern.compile("\\b[fm]\\b");
 
-    public UserInformationExtractor() {
+    /**
+     * словарь для сбора совпадений
+     */
+    HashMap<Integer, String>matches;
 
+    public UserInformationExtractor() {
+        matches=new HashMap<>();
     }
 
 
@@ -32,9 +44,12 @@ public class UserInformationExtractor {
             throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = FULL_NAME_PATTERN.matcher(text);
+        matches.clear();
 
         if (validate(matcher)) {
-            return matcher.group();
+            String value=null;
+            for(int key:matches.keySet()){value=matches.get(key);}
+            return value;
         }
         return null;
     }
@@ -48,9 +63,12 @@ public class UserInformationExtractor {
             throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = DATE_OF_BIRTH_PATTERN.matcher(text);
+        matches.clear();
 
         if (validate(matcher)) {
-            return matcher.group();
+            String value=null;
+            for(int key:matches.keySet()){value=matches.get(key);}
+            return value;
         }
 
         return null;
@@ -65,9 +83,13 @@ public class UserInformationExtractor {
             throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = PHONE_NUMBER_PATTERN.matcher(text);
+        matches.clear();
+
 
         if (validate(matcher)) {
-            return matcher.group();
+            String value=null;
+            for(int key:matches.keySet()){value=matches.get(key);}
+            return value;
         }
 
         return null;
@@ -82,46 +104,65 @@ public class UserInformationExtractor {
             throws InsufficientDataException, InvalidDataFormatException {
 
         Matcher matcher = GENDER_PATTERN.matcher(text);
+        matches.clear();
+
 
         if (validate(matcher)) {
-            return matcher.group();
+            String value=null;
+            for(int key:matches.keySet()){value=matches.get(key);}
+            return value;
         }
 
         return null;
     }
 
+    /**
+     * валидация распарсенных данных и выброс исключений при ошибках
+     * @param matcher объект Matcher
+     * @return  True - успешно False - ошибка(вместо вывода False всегда будет
+     * генерироваться исключение)
+     * @throws InsufficientDataException данных недостаточно
+     * @throws InvalidDataFormatException данные повторяются
+     */
     private boolean validate(Matcher matcher)
             throws InsufficientDataException, InvalidDataFormatException {
-        List<Integer> matchPositions=new ArrayList<>();
+        Pattern pattern=matcher.pattern();
         while (matcher.find()){
-            matchPositions.add(matcher.start());
+            matches.put(matcher.start(), matcher.group());
         }
-        int size= matchPositions.size();
+        int size= matches.size();
         if(size!=1){
             if(size==0){
-                throw new InvalidDataFormatException(generatingATextMessage(matcher,matchPositions));
+                throw new InvalidDataFormatException(generatingATextMessage(pattern,matches));
             }else {
-                throw new InsufficientDataException(generatingATextMessage(matcher,matchPositions));
+                throw new InsufficientDataException(generatingATextMessage(pattern,matches));
             }
         }
         return true;
     }
 
-    private String generatingATextMessage(Matcher matcher, List<Integer> matchPositions){
+    /**
+     * генерация сообщения об ошибке
+     * @param pattern паттерн рег. выражения при работе с которым произошла ошибка
+     * @param matches словарь совпадений для паттерна
+     * @return строка сообщения об ошибке
+     */
+    private String generatingATextMessage(Pattern pattern,
+                                          HashMap<Integer,String> matches){
         StringBuilder message=new StringBuilder("Данные о ");
-        String text=matchPositions.size()==0?"не найдены или указаны не верно ":
-                "найдены в нескольких позициях представленного текста: ";
-        if(matcher.pattern().equals(FULL_NAME_PATTERN)){
+        String text=matches.size()==0?"не найдены или указаны не верно ":
+                "найдены в нескольких позициях представленного текста: \n";
+        if(pattern.equals(FULL_NAME_PATTERN)){
             message.append("Фамилии Имени и Отчеству ").append(text);
-        }else if(matcher.pattern().equals(DATE_OF_BIRTH_PATTERN)){
+        }else if(pattern.equals(DATE_OF_BIRTH_PATTERN)){
             message.append("дате рождения ").append(text);
-        } else if (matcher.pattern().equals(PHONE_NUMBER_PATTERN)) {
+        } else if (pattern.equals(PHONE_NUMBER_PATTERN)) {
             message.append("номере телефона ").append(text);
-        } else if (matcher.pattern().equals(GENDER_PATTERN)) {
+        } else if (pattern.equals(GENDER_PATTERN)) {
             message.append("поле ").append(text);
         }
-        for(int pos:matchPositions){
-            message.append(pos + " ");
+        for(int pos:matches.keySet()){
+            message.append(pos + "\t -> "+matches.get(pos)+"\t\n");
         }
         return message.toString();
     }

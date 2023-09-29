@@ -2,7 +2,11 @@ package src.com.romanovCopy.informationExtractor;
 
 import src.com.romanovCopy.myExceptions.*;
 
+import java.io.IOException;
 
+/**
+ * класс отвечающий за отправку запросов, получение и сохранение результатов
+ */
 public class UserDataExtraction {
 
     private String fullName;
@@ -11,6 +15,11 @@ public class UserDataExtraction {
     private String gender;
     private String data;
 
+    /**
+     * отправка запросов, получение результатов, обработка исключений
+     * возникающих в приложении
+     * @param text исходный текст
+     */
     public UserDataExtraction(String text) {
         try {
             if(text!=null && !text.equals("")){
@@ -30,11 +39,22 @@ public class UserDataExtraction {
             System.out.println(e.getMessage());
         } catch (InsufficientDataException e) {
             System.out.println(e.getMessage());
-        }  catch (Exception e) {
+        }  catch (IOException e) {
+            System.out.println(e.getMessage());
+        }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
+
+    /**
+     * создание результирующей строки для сохранения
+     * @param fullName фамилия, имя и отчество
+     * @param dateOfBirth дата рождения
+     * @param phoneNumber номер телефона
+     * @param gender пол
+     * @return
+     */
     private String createUserDataFile(String fullName, String dateOfBirth,
                                            String phoneNumber, String gender){
         String maket="< >";

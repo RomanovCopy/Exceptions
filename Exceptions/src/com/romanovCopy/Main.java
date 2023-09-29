@@ -4,6 +4,9 @@ import src.com.romanovCopy.informationExtractor.UserDataExtraction;
 
 import java.util.Scanner;
 
+/**
+ * класс служащий для запуска программы и получения исходных данных
+ */
 public class Main {
 
     public static void main(String[] args) {
